@@ -14,9 +14,6 @@ endif
 
 all: $(APPNAME) libprx.so
 
-$(APPNAME): $(APPNAME).o Log.o
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
 libprx.so: libprx.o Log.o
 	$(CXX) $(CXXFLAGS) -o $@ -Wl,--no-as-needed -shared -ldl $^
 

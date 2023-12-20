@@ -1,0 +1,41 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+import sys
+import os
+import subprocess
+
+
+class PathLib:
+    @staticmethod
+    def dirname(of: str) -> str:
+        return os.path.dirname(os.path.realpath(of))
+
+    @staticmethod
+    def shortdir(of: str) -> str:
+        tokens = of.split(os.path.sep)
+        tokens = list(map(lambda token: token[:1], tokens[:-1])) + [tokens[-1]]
+        return os.path.sep.join(tokens)
+
+
+class Log:
+    @staticmethod
+    def inf(*values: object) -> None:
+        print(*values, file=sys.stderr)
+
+
+if __name__ == "__main__":
+    working_directory = PathLib.dirname(sys.argv[0])
+    libary_path = f"{working_directory}/libprx.so"
+
+    env = os.environ.copy()
+    Log.inf("=== Injection")
+    Log.inf("PATH:", PathLib.shortdir(libary_path))
+
+    env["LD_PRELOAD"] = libary_path
+    env["PRX_HOST"] = "10.30.80.254"
+    env["PRX_PORT"] = "8880"
+
+    argv_begin = 1
+    print("=== Start program")
+    subprocess.run(sys.argv[argv_begin:], env=env)

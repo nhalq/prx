@@ -41,7 +41,14 @@ int connect(int sockfd, __CONST_SOCKADDR_ARG addr, socklen_t len) {
   char* ip = inet_ntoa(peerAddr->sin_addr);
   uint16_t port = htons(peerAddr->sin_port);
 
-  int octect = (::ntohl(peerAddr->sin_addr.s_addr) >> 24) & 0xFF;
+  uint32_t ina = ::ntohl(peerAddr->sin_addr.s_addr);
+  PRX_INFx("UInt32 Address=%ld", (int64_t)ina);
+  if (ina == 178521359u) {
+    PRX_INFx("Bypass allowed connection %s:%d", ip, port);
+    return sys_connect(sockfd, addr, len);
+  }
+
+  int octect = (ina >> 24) & 0xFF;
   if (octect == 127) {
     PRX_INFx("Bypass loopback connection %s:%d", ip, port);
     return sys_connect(sockfd, addr, len);
